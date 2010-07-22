@@ -1,0 +1,5 @@
+.*.swp
+WEB-INF
+.gems
+bin
+gen
