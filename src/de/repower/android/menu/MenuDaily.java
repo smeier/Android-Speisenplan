@@ -16,9 +16,10 @@
 
 package de.repower.android.menu;
 
-import de.repower.android.menu.R;
+import java.text.DecimalFormat;
+import java.util.Date;
 
-import android.app.ListActivity;
+import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -27,11 +28,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
+import android.view.View.OnClickListener;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
-public class MenuDaily extends ListActivity {
+public class MenuDaily extends Activity implements OnClickListener {
     private static final int ACTIVITY_CREATE = 0;
     private static final int ACTIVITY_EDIT = 1;
 
@@ -40,32 +42,53 @@ public class MenuDaily extends ListActivity {
     private static final int INSERT_MANY_ID = Menu.FIRST + 1;
 
     private MenuDatasource mDbHelper;
+    private TextView date;
+    private TextView[] category = new TextView[3];
+    private TextView[] price = new TextView[3];
+    private TextView[] body = new TextView[3];
 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.menu_list);
         mDbHelper = new MenuDbAdapter(this);
+        setContentView(R.layout.menu_daily);
         fillData();
-        registerForContextMenu(getListView());
     }
 
     private void fillData() {
-        Cursor notesCursor = mDbHelper.fetchAllNotes();
-        startManagingCursor(notesCursor);
+        Date today = new Date();
+        Cursor cursor = mDbHelper.fetchMenusFor(today);
+        startManagingCursor(cursor);
 
-        // Create an array to specify the fields we want to display in the list
-        // (only TITLE)
-        String[] from = new String[] { MenuDatasource.KEY_DATE, MenuDatasource.KEY_BODY, MenuDatasource.KEY_CATEGORY, MenuDatasource.KEY_PRICE };
+        date = (TextView) findViewById(R.id.date);
+        body[0] = (TextView) findViewById(R.id.body_0);
+        category[0] = (TextView) findViewById(R.id.category_0);
+        price[0] = (TextView) findViewById(R.id.price_0);
+        body[1] = (TextView) findViewById(R.id.body_1);
+        category[1] = (TextView) findViewById(R.id.category_1);
+        price[1] = (TextView) findViewById(R.id.price_1);
+        body[2] = (TextView) findViewById(R.id.body_2);
+        category[2] = (TextView) findViewById(R.id.category_2);
+        price[2] = (TextView) findViewById(R.id.price_2);
 
-        // and an array of the fields we want to bind those fields to (in this
-        // case just text1)
-        int[] to = new int[] { R.id.date, R.id.body, R.id.category, R.id.price };
+        startManagingCursor(cursor);
+        if (!cursor.isClosed() && !cursor.isAfterLast()) {
+            int columnIndex = cursor.getColumnIndexOrThrow(MenuDatasource.KEY_DATE);
+            date.setText(cursor.getString(columnIndex));
+            int index = 0;
+            do {
+                body[index].setText(cursor.getString(cursor.getColumnIndexOrThrow(MenuDatasource.KEY_BODY)));
+                category[index].setText(cursor.getString(cursor.getColumnIndexOrThrow(MenuDatasource.KEY_CATEGORY)));
+                price[index].setText(formatPrice(cursor));
+                index++;
+            } while (cursor.moveToNext());
+        }
 
-        // Now create a simple cursor adapter and set it to display
-        SimpleCursorAdapter notes = new SimpleCursorAdapter(this, R.layout.menu_row, notesCursor, from, to);
-        setListAdapter(notes);
+    }
+
+    private String formatPrice(Cursor cursor) {
+        return (new DecimalFormat("#0.00")).format(cursor.getFloat(cursor.getColumnIndexOrThrow(MenuDatasource.KEY_PRICE))) + " €";
     }
 
     @Override
@@ -113,16 +136,16 @@ public class MenuDaily extends ListActivity {
     }
 
     @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-        Intent i = new Intent(this, MenuEdit.class);
-        i.putExtra(MenuDatasource.KEY_ROWID, id);
-        startActivityForResult(i, ACTIVITY_EDIT);
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
         fillData();
+    }
+
+    @Override
+    public void onClick(View view) {
+        EditText edit = (EditText) view;
+        Intent i = new Intent(this, MenuEdit.class);
+        i.putExtra(MenuDatasource.KEY_ROWID, edit.getText());
+        startActivityForResult(i, ACTIVITY_EDIT);
     }
 }

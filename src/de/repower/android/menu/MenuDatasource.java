@@ -1,5 +1,7 @@
 package de.repower.android.menu;
 
+import java.util.Date;
+
 import android.database.Cursor;
 import android.database.SQLException;
 
@@ -35,7 +37,7 @@ public interface MenuDatasource {
      * 
      * @return Cursor over all notes
      */
-    public abstract Cursor fetchAllNotes();
+    public abstract Cursor fetchAllMenus();
 
     /**
      * Return a Cursor positioned at the note that matches the given rowId
@@ -57,5 +59,12 @@ public interface MenuDatasource {
      * @return true if the note was successfully updated, false otherwise
      */
     public abstract boolean updateNote(long rowId, String title, String body);
+
+    /**
+     * Return a Cursor over the menus of date
+     * 
+     * @throws SQLException if note could not be found/retrieved
+     */
+    public abstract Cursor fetchMenusFor(Date date);
 
 }

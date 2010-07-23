@@ -16,12 +16,15 @@
 
 package de.repower.android.menu;
 
+import java.util.Date;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.format.DateFormat;
 import android.util.Log;
 
 /**
@@ -80,7 +83,8 @@ public class MenuDbAdapter implements MenuDatasource {
         }
 
         private void insertRecordIntoDatabase(SQLiteDatabase db, int i) {
-            String sql = "insert into menu (menu_date, body, price, category) values ('" + makeDate(i) + "', 'Essen Nr. " + i + "', " + makePrice(i) + ", '" + makeCategory(i) + "')";
+            String sql = "insert into menu (menu_date, body, price, category) values ('" + makeDate(i)
+                    + "', 'Essen Nr. " + i + "', " + makePrice(i) + ", '" + makeCategory(i) + "')";
             db.execSQL(sql);
         }
 
@@ -174,10 +178,11 @@ public class MenuDbAdapter implements MenuDatasource {
      * 
      * @see com.android.demo.notepad3.StatuscodeDatasource#fetchAllNotes()
      */
-    public Cursor fetchAllNotes() {
+    public Cursor fetchAllMenus() {
 
         return mDb.query(DATABASE_TABLE, new String[] { MenuDatasource.KEY_ROWID, MenuDatasource.KEY_DATE,
-                MenuDatasource.KEY_BODY, MenuDatasource.KEY_CATEGORY, MenuDatasource.KEY_PRICE }, null, null, null, null, null);
+                MenuDatasource.KEY_BODY, MenuDatasource.KEY_CATEGORY, MenuDatasource.KEY_PRICE }, null, null, null,
+                null, null);
     }
 
     /*
@@ -190,8 +195,8 @@ public class MenuDbAdapter implements MenuDatasource {
         Cursor mCursor =
 
         mDb.query(true, DATABASE_TABLE, new String[] { MenuDatasource.KEY_ROWID, MenuDatasource.KEY_DATE,
-                MenuDatasource.KEY_BODY, MenuDatasource.KEY_CATEGORY, MenuDatasource.KEY_PRICE }, MenuDatasource.KEY_ROWID + "=" + rowId, null, null, null, null,
-                null);
+                MenuDatasource.KEY_BODY, MenuDatasource.KEY_CATEGORY, MenuDatasource.KEY_PRICE },
+                MenuDatasource.KEY_ROWID + "=" + rowId, null, null, null, null, null);
         if (mCursor != null) {
             mCursor.moveToFirst();
         }
@@ -211,5 +216,22 @@ public class MenuDbAdapter implements MenuDatasource {
         args.put(MenuDatasource.KEY_BODY, body);
 
         return mDb.update(DATABASE_TABLE, args, MenuDatasource.KEY_ROWID + "=" + rowId, null) > 0;
+    }
+
+    @Override
+    public Cursor fetchMenusFor(Date date) {
+        String dateStr = formatDate(date);
+        Cursor mCursor = mDb.query(true, DATABASE_TABLE,
+                new String[] { MenuDatasource.KEY_ROWID, MenuDatasource.KEY_DATE, MenuDatasource.KEY_BODY,
+                        MenuDatasource.KEY_CATEGORY, MenuDatasource.KEY_PRICE }, MenuDatasource.KEY_DATE + "='" + dateStr 
+                        + "'", null, null, null, null, null);
+        if (mCursor != null) {
+            mCursor.moveToFirst();
+        }
+        return mCursor;
+    }
+
+    private String formatDate(Date date) {
+        return DateFormat.format("yyyy-MM-dd", date).toString();
     }
 }
