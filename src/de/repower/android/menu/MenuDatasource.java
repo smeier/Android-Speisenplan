@@ -4,6 +4,7 @@ import java.util.Date;
 
 import android.database.Cursor;
 import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 
 public interface MenuDatasource {
 
@@ -67,4 +68,9 @@ public interface MenuDatasource {
      */
     public abstract Cursor fetchMenusFor(Date date);
 
+    /**
+     * Create some items.
+     * @param db
+     */
+    public void createManyItems();
 }

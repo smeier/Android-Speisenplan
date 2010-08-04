@@ -2,13 +2,13 @@
 <resources>
     <string name="app_name">Menu Tech-Center</string>
     <string name="no_notes">No Notes Yet</string>
-    <string name="menu_insert">Add Note</string>
+    <string name="menu_insert">Hinzufügen (defunct)</string>
     <string name="menu_delete">Delete Note</string>
     <string name="title">Menu</string>
     <string name="body">Details</string>
     <string name="confirm">Confirm</string>
     <string name="edit_note">Edit Note</string>
-<string name="menu_insert_many">Insert many items</string>
+<string name="menu_insert_many">Create demo entries</string>
 <string name="category">Kategorie</string>
 <string name="price">Preis</string>
 </resources>

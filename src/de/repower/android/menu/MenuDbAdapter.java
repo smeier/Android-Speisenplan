@@ -16,7 +16,9 @@
 
 package de.repower.android.menu;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -40,8 +42,8 @@ import android.util.Log;
 public class MenuDbAdapter implements MenuDatasource {
 
     private static final String TAG = "MenuDbAdapter";
-    private DatabaseHelper mDbHelper;
-    private SQLiteDatabase mDb;
+    private DatabaseHelper _dbHelper;
+    private SQLiteDatabase _db;
 
     /**
      * Database creation sql statement
@@ -76,44 +78,63 @@ public class MenuDbAdapter implements MenuDatasource {
             onCreate(db);
         }
 
-        private void createManyItems(SQLiteDatabase db) {
-            for (int i = 0; i < 100; i++) {
+        public void createManyItems(SQLiteDatabase db) {
+            deleteRecords(db);
+            for (int i = 0; i < 9; i++) {
                 insertRecordIntoDatabase(db, i);
             }
         }
 
-        private void insertRecordIntoDatabase(SQLiteDatabase db, int i) {
-            String sql = "insert into menu (menu_date, body, price, category) values ('" + makeDate(i)
-                    + "', 'Essen Nr. " + i + "', " + makePrice(i) + ", '" + makeCategory(i) + "')";
+        private void deleteRecords(SQLiteDatabase db) {
+            String sql = "delete from menu where menu_date >= '" + makeDate(0) + "'";
             db.execSQL(sql);
         }
 
-        private String makeCategory(int i) {
+        private void insertRecordIntoDatabase(SQLiteDatabase db, int i) {
+            String sql = "insert into menu (menu_date, body, price, category) values ('" + makeDate(i) + "', '"
+                    + makeDescription(i) + "', " + makePrice(i) + ", '" + makeCategory(i) + "')";
+            db.execSQL(sql);
+        }
+
+        private String makeDescription(int i) {
             switch (i % 3) {
                 case 0:
-                    return "Stamm";
+                    return "Gebackenes Seehechtfilet mit Remouladensoße und Bratkartoffeln";
                 case 1:
-                    return "Wok";
+                    return "Wrap gefüllt mit Rinderhack Salat und Kräuterdip";
                 default:
-                    return "Veggie";
+                    return "Gemüse Frikadelle an Salzkartoffeln Petersieliensauce und Salatbeilage";
             }
         }
 
-        private double makePrice(int i) {
-            switch (i % 3) {
-                case 0:
-                    return 3.8;
-                case 1:
-                    return 5.2;
-                default:
-                    return 4.5;
-            }
-        }
+    }
 
-        private String makeDate(int i) {
-            return "2010-07-" + (i / 3 + 1);
+    private static String makeCategory(int i) {
+        switch (i % 3) {
+            case 0:
+                return "Stamm";
+            case 1:
+                return "Wok";
+            default:
+                return "Veggie";
         }
+    }
 
+    private static double makePrice(int i) {
+        switch (i % 3) {
+            case 0:
+                return 3.8;
+            case 1:
+                return 5.2;
+            default:
+                return 4.5;
+        }
+    }
+
+    private static String makeDate(int i) {
+        Calendar day = new GregorianCalendar();
+        day.add(Calendar.DAY_OF_MONTH, i / 3);
+        return formatDate(day.getTime());
     }
 
     /**
@@ -139,13 +160,13 @@ public class MenuDbAdapter implements MenuDatasource {
      *             if the database could be neither opened or created
      */
     private MenuDatasource open() throws SQLException {
-        mDbHelper = new DatabaseHelper(mCtx);
-        mDb = mDbHelper.getWritableDatabase();
+        _dbHelper = new DatabaseHelper(mCtx);
+        _db = _dbHelper.getWritableDatabase();
         return this;
     }
 
     public void close() {
-        mDbHelper.close();
+        _dbHelper.close();
     }
 
     /*
@@ -160,7 +181,7 @@ public class MenuDbAdapter implements MenuDatasource {
         initialValues.put(MenuDatasource.KEY_DATE, title);
         initialValues.put(MenuDatasource.KEY_BODY, body);
 
-        return mDb.insert(DATABASE_TABLE, null, initialValues);
+        return _db.insert(DATABASE_TABLE, null, initialValues);
     }
 
     /*
@@ -170,7 +191,7 @@ public class MenuDbAdapter implements MenuDatasource {
      */
     public boolean deleteNote(long rowId) {
 
-        return mDb.delete(DATABASE_TABLE, MenuDatasource.KEY_ROWID + "=" + rowId, null) > 0;
+        return _db.delete(DATABASE_TABLE, MenuDatasource.KEY_ROWID + "=" + rowId, null) > 0;
     }
 
     /*
@@ -180,7 +201,7 @@ public class MenuDbAdapter implements MenuDatasource {
      */
     public Cursor fetchAllMenus() {
 
-        return mDb.query(DATABASE_TABLE, new String[] { MenuDatasource.KEY_ROWID, MenuDatasource.KEY_DATE,
+        return _db.query(DATABASE_TABLE, new String[] { MenuDatasource.KEY_ROWID, MenuDatasource.KEY_DATE,
                 MenuDatasource.KEY_BODY, MenuDatasource.KEY_CATEGORY, MenuDatasource.KEY_PRICE }, null, null, null,
                 null, null);
     }
@@ -194,7 +215,7 @@ public class MenuDbAdapter implements MenuDatasource {
 
         Cursor mCursor =
 
-        mDb.query(true, DATABASE_TABLE, new String[] { MenuDatasource.KEY_ROWID, MenuDatasource.KEY_DATE,
+        _db.query(true, DATABASE_TABLE, new String[] { MenuDatasource.KEY_ROWID, MenuDatasource.KEY_DATE,
                 MenuDatasource.KEY_BODY, MenuDatasource.KEY_CATEGORY, MenuDatasource.KEY_PRICE },
                 MenuDatasource.KEY_ROWID + "=" + rowId, null, null, null, null, null);
         if (mCursor != null) {
@@ -215,23 +236,28 @@ public class MenuDbAdapter implements MenuDatasource {
         args.put(MenuDatasource.KEY_DATE, title);
         args.put(MenuDatasource.KEY_BODY, body);
 
-        return mDb.update(DATABASE_TABLE, args, MenuDatasource.KEY_ROWID + "=" + rowId, null) > 0;
+        return _db.update(DATABASE_TABLE, args, MenuDatasource.KEY_ROWID + "=" + rowId, null) > 0;
     }
 
     @Override
     public Cursor fetchMenusFor(Date date) {
         String dateStr = formatDate(date);
-        Cursor mCursor = mDb.query(true, DATABASE_TABLE,
+        Cursor mCursor = _db.query(true, DATABASE_TABLE,
                 new String[] { MenuDatasource.KEY_ROWID, MenuDatasource.KEY_DATE, MenuDatasource.KEY_BODY,
-                        MenuDatasource.KEY_CATEGORY, MenuDatasource.KEY_PRICE }, MenuDatasource.KEY_DATE + "='" + dateStr 
-                        + "'", null, null, null, null, null);
+                        MenuDatasource.KEY_CATEGORY, MenuDatasource.KEY_PRICE }, MenuDatasource.KEY_DATE + "='"
+                        + dateStr + "'", null, null, null, null, null);
         if (mCursor != null) {
             mCursor.moveToFirst();
         }
         return mCursor;
     }
 
-    private String formatDate(Date date) {
+    private static String formatDate(Date date) {
         return DateFormat.format("yyyy-MM-dd", date).toString();
+    }
+
+    @Override
+    public void createManyItems() {
+        _dbHelper.createManyItems(_db);
     }
 }

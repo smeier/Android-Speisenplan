@@ -82,7 +82,7 @@ public class MenuDaily extends Activity implements OnClickListener {
                 category[index].setText(cursor.getString(cursor.getColumnIndexOrThrow(MenuDatasource.KEY_CATEGORY)));
                 price[index].setText(formatPrice(cursor));
                 index++;
-            } while (cursor.moveToNext());
+            } while (cursor.moveToNext() && index < 3);
         }
 
     }
@@ -106,6 +106,7 @@ public class MenuDaily extends Activity implements OnClickListener {
                 createNote();
                 return true;
             case INSERT_MANY_ID:
+                mDbHelper.createManyItems();
                 return true;
         }
 
