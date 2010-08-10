@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="de.repower.android.menu">
-    <application android:icon="@drawable/icon">
-        <activity android:name=".MenuDaily" android:label="@string/app_name">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".MenuEdit" />
-    </application>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+	package="de.repower.android.menu">
+	<application android:icon="@drawable/icon">
+		<activity android:name=".MenuDaily" android:label="@string/app_name">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
+		<activity android:name=".MenuEdit" />
+		<uses-library android:name="android.test.runner" />
+	</application>
+	<instrumentation android:name="android.test.InstrumentationTestRunner"
+		android:targetPackage="de.repower.android.menu" android:label="Tests for Menu App" />
+	<uses-permission android:name="android.permission.INTERNET" />
 </manifest> 

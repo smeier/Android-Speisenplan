@@ -26,7 +26,6 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.text.format.DateFormat;
 import android.util.Log;
 
 /**
@@ -134,7 +133,7 @@ public class MenuDbAdapter implements MenuDatasource {
     private static String makeDate(int i) {
         Calendar day = new GregorianCalendar();
         day.add(Calendar.DAY_OF_MONTH, i / 3);
-        return formatDate(day.getTime());
+        return DateUtil.formatDate(day.getTime());
     }
 
     /**
@@ -241,7 +240,7 @@ public class MenuDbAdapter implements MenuDatasource {
 
     @Override
     public Cursor fetchMenusFor(Date date) {
-        String dateStr = formatDate(date);
+        String dateStr = DateUtil.formatDate(date);
         Cursor mCursor = _db.query(true, DATABASE_TABLE,
                 new String[] { MenuDatasource.KEY_ROWID, MenuDatasource.KEY_DATE, MenuDatasource.KEY_BODY,
                         MenuDatasource.KEY_CATEGORY, MenuDatasource.KEY_PRICE }, MenuDatasource.KEY_DATE + "='"
@@ -250,10 +249,6 @@ public class MenuDbAdapter implements MenuDatasource {
             mCursor.moveToFirst();
         }
         return mCursor;
-    }
-
-    private static String formatDate(Date date) {
-        return DateFormat.format("yyyy-MM-dd", date).toString();
     }
 
     @Override

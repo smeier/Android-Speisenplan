@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Menu Tech-Center</string>
     <string name="no_notes">No Notes Yet</string>
-    <string name="menu_insert">Hinzufügen (defunct)</string>
+    <string name="menu_insert">WWW</string>
     <string name="menu_delete">Delete Note</string>
     <string name="title">Menu</string>
     <string name="body">Details</string>
