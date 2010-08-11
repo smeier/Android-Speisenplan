@@ -16,9 +16,11 @@
 
 package de.repower.android.menu;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -27,6 +29,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import android.widget.TextView;
 
 /**
  * Simple notes database access helper class. Defines the basic CRUD operations
@@ -133,7 +136,7 @@ public class MenuDbAdapter implements MenuDatasource {
     private static String makeDate(int i) {
         Calendar day = new GregorianCalendar();
         day.add(Calendar.DAY_OF_MONTH, i / 3);
-        return DateUtil.formatDate(day.getTime());
+        return DateUtil.formatDateForDB(day.getTime());
     }
 
     /**
@@ -238,9 +241,8 @@ public class MenuDbAdapter implements MenuDatasource {
         return _db.update(DATABASE_TABLE, args, MenuDatasource.KEY_ROWID + "=" + rowId, null) > 0;
     }
 
-    @Override
-    public Cursor fetchMenusFor(Date date) {
-        String dateStr = DateUtil.formatDate(date);
+    public Cursor cursorFor(Date date) {
+        String dateStr = DateUtil.formatDateForDB(date);
         Cursor mCursor = _db.query(true, DATABASE_TABLE,
                 new String[] { MenuDatasource.KEY_ROWID, MenuDatasource.KEY_DATE, MenuDatasource.KEY_BODY,
                         MenuDatasource.KEY_CATEGORY, MenuDatasource.KEY_PRICE }, MenuDatasource.KEY_DATE + "='"
@@ -249,6 +251,22 @@ public class MenuDbAdapter implements MenuDatasource {
             mCursor.moveToFirst();
         }
         return mCursor;
+    }
+
+    public List<Menu> fetchMenusFor(Date date) {
+        Cursor cursor = cursorFor(date);
+        List<Menu> result = new ArrayList<Menu>();
+        if (!cursor.isClosed() && !cursor.isAfterLast()) {
+            do {
+            String dateStr = cursor.getString(cursor.getColumnIndexOrThrow(MenuDatasource.KEY_DATE));
+            String category = cursor.getString(cursor.getColumnIndexOrThrow(MenuDatasource.KEY_CATEGORY));
+            Double price = cursor.getDouble(cursor.getColumnIndexOrThrow(MenuDatasource.KEY_PRICE));
+            String description = cursor.getString(cursor.getColumnIndexOrThrow(MenuDatasource.KEY_BODY));
+            Menu menu = new Menu(category, description, price, DateUtil.parseDBDate(dateStr));
+            result.add(menu);
+            } while (cursor.moveToNext());
+        }
+        return result;
     }
 
     @Override

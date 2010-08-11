@@ -1,6 +1,7 @@
 package de.repower.android.menu;
 
 import java.util.Date;
+import java.util.List;
 
 import android.database.Cursor;
 import android.database.SQLException;
@@ -66,7 +67,7 @@ public interface MenuDatasource {
      * 
      * @throws SQLException if note could not be found/retrieved
      */
-    public abstract Cursor fetchMenusFor(Date date);
+    public abstract List<Menu> fetchMenusFor(Date date);
 
     /**
      * Create some items.

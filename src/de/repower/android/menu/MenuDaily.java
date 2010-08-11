@@ -18,10 +18,10 @@ package de.repower.android.menu;
 
 import java.text.DecimalFormat;
 import java.util.Date;
+import java.util.List;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -51,15 +51,14 @@ public class MenuDaily extends Activity implements OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mDbHelper = new MenuDbAdapter(this);
+        mDbHelper = new MenuWebserviceAdapter();
         setContentView(R.layout.menu_daily);
         fillData();
     }
 
     private void fillData() {
         Date today = new Date();
-        Cursor cursor = mDbHelper.fetchMenusFor(today);
-        startManagingCursor(cursor);
+        List<de.repower.android.menu.Menu> menus = mDbHelper.fetchMenusFor(today);
 
         date = (TextView) findViewById(R.id.date);
         body[0] = (TextView) findViewById(R.id.body_0);
@@ -72,23 +71,21 @@ public class MenuDaily extends Activity implements OnClickListener {
         category[2] = (TextView) findViewById(R.id.category_2);
         price[2] = (TextView) findViewById(R.id.price_2);
 
-        startManagingCursor(cursor);
-        if (!cursor.isClosed() && !cursor.isAfterLast()) {
-            int columnIndex = cursor.getColumnIndexOrThrow(MenuDatasource.KEY_DATE);
-            date.setText(cursor.getString(columnIndex));
+        if (menus != null && !menus.isEmpty()) {
             int index = 0;
-            do {
-                body[index].setText(cursor.getString(cursor.getColumnIndexOrThrow(MenuDatasource.KEY_BODY)));
-                category[index].setText(cursor.getString(cursor.getColumnIndexOrThrow(MenuDatasource.KEY_CATEGORY)));
-                price[index].setText(formatPrice(cursor));
+            for (de.repower.android.menu.Menu menu : menus) {
+                date.setText(DateUtil.beautifyDate(menu.getDate()));
+                body[index].setText(menu.getDescription());
+                category[index].setText(menu.getCategory());
+                price[index].setText(formatPrice(menu.getPrice()));
                 index++;
-            } while (cursor.moveToNext() && index < 3);
+            }
         }
 
     }
 
-    private String formatPrice(Cursor cursor) {
-        return (new DecimalFormat("#0.00")).format(cursor.getFloat(cursor.getColumnIndexOrThrow(MenuDatasource.KEY_PRICE))) + " €";
+    private String formatPrice(double price) {
+        return (new DecimalFormat("#0.00")).format(price) + " €";
     }
 
     @Override
