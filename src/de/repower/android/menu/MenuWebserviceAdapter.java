@@ -21,6 +21,10 @@ import android.database.SQLException;
 
 public class MenuWebserviceAdapter implements MenuDatasource {
 
+    private static final String CANTEEN = "re_de_or";
+    private static final String SERVER = "http://recanteen.appspot.com";
+    //private static final String SERVER = "http://192.168.178.32:8080";
+
     @Override
     public void createManyItems() {
         notImplemented();
@@ -32,11 +36,7 @@ public class MenuWebserviceAdapter implements MenuDatasource {
         return 0;
     }
 
-    private void notImplemented() {
-        throw new RuntimeException("Not implemented yet");
-    }
-
-    @Override
+   @Override
     public boolean deleteNote(long rowId) {
         notImplemented();
         return false;
@@ -53,13 +53,11 @@ public class MenuWebserviceAdapter implements MenuDatasource {
         String content = null;
         HttpClient httpClient = new DefaultHttpClient();
         HttpContext localContext = new BasicHttpContext();
-        String url = "http://recanteen.appspot.com/"; // + DateUtil.formatDate(date);
+        String url = SERVER + "/" + CANTEEN + "/" + DateUtil.formatDateForDB(date);
         HttpGet httpGet = new HttpGet(url);
         try {
             HttpResponse response = httpClient.execute(httpGet, localContext);
-            System.out.println(response.getEntity().getContentLength());
             content = getStreamContent(response.getEntity().getContent());
-            // System.out.println(content);
             return MenuParser.parseMenuArray(content);
         } catch (ClientProtocolException e) {
             e.printStackTrace();
@@ -96,4 +94,8 @@ public class MenuWebserviceAdapter implements MenuDatasource {
         return false;
     }
 
-}
+    private void notImplemented() {
+        throw new RuntimeException("Not implemented yet");
+    }
+
+ }
