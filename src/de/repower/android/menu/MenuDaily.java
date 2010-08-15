@@ -53,6 +53,11 @@ public class MenuDaily extends Activity implements OnClickListener {
         super.onCreate(savedInstanceState);
         mDbHelper = new MenuWebserviceAdapter();
         setContentView(R.layout.menu_daily);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
         fillData();
     }
 
