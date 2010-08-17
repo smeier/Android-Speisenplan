@@ -90,7 +90,7 @@ public class MenuDaily extends Activity implements OnClickListener {
     }
 
     private String formatPrice(double price) {
-        return (new DecimalFormat("#0.00")).format(price) + " €";
+        return (new DecimalFormat("#0.00")).format(price) + " \u20AC";
     }
 
     @Override
