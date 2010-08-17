@@ -1,166 +1,79 @@
-<?xml version="1.0" encoding="utf-8"?>
-<project name="Speisenplan" default="deploy" xmlns:android="antlib:com.googlecode.autoandroid.ant">
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Speisenplan" default="help">
 
-    <property name="build.dir" value="build" />
-    <property name="src.dir" value="src" />
-    <property name="gen.src.dir" value="${build.dir}/src" />
-    <property name="app.name" value="Speisenplan" />
-    <property name="keystore.file" value="ant/conf/keystore"/>
-    <property name="keystore.alias" value="android"/>
-    <property name="keystore.password" value="android"/>
+    <!-- The local.properties file is created and updated by the 'android' tool.
+         It contains the path to the SDK. It should *NOT* be checked in in Version
+         Control Systems. -->
+    <property file="local.properties" />
 
-	<!-- Requires ant 1.7 or better -->
+    <!-- The build.properties file can be created by you and is never touched
+         by the 'android' tool. This is the place to change some of the default property values
+         used by the Ant rules.
+         Here are some properties you may want to change/update:
 
-	<taskdef uri="antlib:com.googlecode.autoandroid.ant" classpath="ant/lib/android-ant.jar"/>
-	<android:home/> <!-- Set the detected android-home property to the sdk root. -->
+         application.package
+             the name of your application package as defined in the manifest. Used by the
+             'uninstall' rule.
+         source.dir
+             the name of the source directory. Default is 'src'.
+         out.dir
+             the name of the output directory. Default is 'bin'.
 
-	<!-- Dependencies -->
+         Properties related to the SDK location or the project target should be updated
+          using the 'android' tool with the 'update' action.
 
-	<fileset dir="lib" id="main.jars">
-		<include name="scalatest.jar"/>
-	</fileset>
-	
-	<fileset dir="lib" id="test.jars">
-	</fileset>
+         This file is an integral part of the build system for your application and
+         should be checked in in Version Control Systems.
 
-	<!-- Rules -->
+         -->
+    <property file="build.properties" />
 
-	<target name="clean" description="Delete the output directories.">
-		<delete dir="target"/>
-	</target>
+    <!-- The default.properties file is created and updated by the 'android' tool, as well
+         as ADT.
+         This file is an integral part of the build system for your application and
+         should be checked in in Version Control Systems. -->
+    <property file="default.properties" />
 
-	<target name="resource-src" description="Generate the R.java file for this project's resources.">
-		<android:aapt>
-			<arg value="package"/>
-			<arg value="-m"/>
-			<arg value="-J"/>
-			<arg file="${gen.src.dir}"/> <!-- Create R.java in the source directory -->
-			<arg value="-M"/>
-			<arg file="AndroidManifest.xml"/>
-			<arg value="-S"/>
-			<arg file="res"/>
-			<arg value="-I"/>
-			<arg file="${android-home}/android.jar"/>
-		</android:aapt>
-	</target>
+    <!-- Custom Android task to deal with the project target, and import the proper rules.
+         This requires ant 1.6.0 or above. -->
+    <path id="android.antlibs">
+        <pathelement path="${sdk.dir}/tools/lib/anttasks.jar" />
+        <pathelement path="${sdk.dir}/tools/lib/sdklib.jar" />
+        <pathelement path="${sdk.dir}/tools/lib/androidprefs.jar" />
+        <pathelement path="${sdk.dir}/tools/lib/apkbuilder.jar" />
+        <pathelement path="${sdk.dir}/tools/lib/jarutils.jar" />
+    </path>
 
-	<target name="compile-main" depends="resource-src" description="Compile the java source.">
-		<mkdir dir="target/main-classes"/>
-		<javac encoding="ascii" target="1.5" debug="true" extdirs=""
-				destdir="target/main-classes"
-				bootclasspath="${android-home}/android.jar">
-            <src path="${src.dir}"/>
-            <src path="${gen.src.dir}"/>
-			<classpath>
-				<fileset refid="main.jars"/>
-			</classpath>
-		</javac>
-	</target>
+    <taskdef name="setup"
+        classname="com.android.ant.SetupTask"
+        classpathref="android.antlibs" />
 
-	<target name="dex" depends="compile-main" description="Convert the .class files into .dex files.">
-		<property name="classes.dex" location="target/classes.dex"/>
-		<android:dx inputref="main.jars">
-			<arg value="--dex"/>
-			<arg value="--output=${classes.dex}"/>
-			<arg path="target/main-classes"/>
-		</android:dx>
-	</target>
+    <!-- Execute the Android Setup task that will setup some properties specific to the target,
+         and import the build rules files.
 
-	<target name="package-res" description="Put the project's resources into the output package file.">
-		<android:aapt>
-			<arg value="package"/>
-			<arg value="-f"/>
-			<arg value="-M"/>
-			<arg file="AndroidManifest.xml"/>
-			<arg value="-S"/>
-			<arg file="res"/>
-			<!-- No assets directory -->
-			<arg value="-I"/>
-			<arg file="${android-home}/android.jar"/>
-			<arg value="-F"/>
-			<arg file="target/${app.name}.ap_"/>
-		</android:aapt>
-	</target>
+         The rules file is imported from
+            <SDK>/platforms/<target_platform>/templates/android_rules.xml
 
-	<target name="package-apk" depends="dex, package-res" description="Package the application and sign it with a debug key.">
-		<android:apk-builder>
-			<arg file="target/${app.name}.apk"/>
-			<arg value="-z"/>
-			<arg file="target/${app.name}.ap_"/>
-			<arg value="-f"/>
-			<arg file="target/classes.dex"/>
-			<arg value="-rf"/>
-			<arg file="src"/>
-			<arg value="-rj"/>
-			<arg file="lib"/>
-		</android:apk-builder>
-	</target>
+         To customize some build steps for your project:
+         - copy the content of the main node <project> from android_rules.xml
+         - paste it in this build.xml below the <setup /> task.
+         - disable the import by changing the setup task below to <setup import="false" />
 
-	<target name="start-emulator" description="Start an emulator.">
-		<android:adb><arg value="start-server"/></android:adb>
-		<android:start-emulator >
-			<arg line="-skin 320x480 -no-boot-anim"/>
-		</android:start-emulator>
-	</target>
+         This will ensure that the properties are setup correctly but that your customized
+         build steps are used.
+    -->
+    <setup />
 
-	<target name="stop-emulator" description="Stop the emulator we started.">
-		<android:stop-emulator/>
-	</target>
-
-	<target name="install" depends="package-apk, start-emulator" description="Install the package on the default emulator.">
-		<android:adb>
-			<arg value="install"/>
-			<arg value="-r"/>
-			<arg file="target/${app.name}.apk"/>
-		</android:adb>
-	</target>
-
-	<target name="demo" depends="install" description="Run the application until Return is hit.">
-		<input>Have fun with the demo, press Return when you're done.</input>
-	</target>
-
-	<target name="compile-stories" depends="compile-main" description="Compile the stories.">
-		<mkdir dir="target/story-classes"/>
-		<javac target="1.5" debug="true" srcdir="stories" destdir="target/story-classes">
-			<classpath>
-				<pathelement location="target/main-classes"/>
-				<fileset refid="test.jars"/>
-				<pathelement location="${android-home}/android.jar"/>
-			</classpath>
-		</javac>
-	</target>
-
-	<target name="run-stories" depends="compile-stories" description="Run the stories on an existing emulator">
-		<mkdir dir="target/junit-reports"/>
-		<junit haltonfailure="true" fork="true" forkMode="once" printsummary="true">
-			<sysproperty key="positron.instrumentedPackage" value="de.repower.android.menu"/>
-			<sysproperty key="positron.apk" file="target/${app.name}.apk"/>
-			
-			<formatter type="plain"/>
-			<batchtest todir="target/junit-reports">
-				<fileset dir="target/story-classes"/>
-			</batchtest>
-			<classpath>
-				<pathelement location="target/main-classes"/>
-				<pathelement location="target/story-classes"/>
-				<fileset refid="test.jars"/>
-			</classpath>
-		</junit>
-	</target>
-
-    <target name="sign" depends="package-apk" description="sign the apk">
+    <target name="sign" depends="release" description="sign the apk">
 		<signjar
-		   keystore="${keystore.file}" 
-		   alias="${keystore.alias}" 
+		   keystore="${key.store}" 
+		   alias="${key.alias}" 
 		   storepass="${keystore.password}"
            lazy="true"
+           jar="bin/${unsigned.jar}"
+           signedjar="bin/${signed.jar}"
 		>
-			<fileset dir="target" includes="*.apk"/>
 		</signjar>
     </target>
-
-	<target name="precommit" depends="clean, install, run-stories, stop-emulator" description="If this passes you are safe to commit."/>
-
-	<target name="deploy" depends="clean, package-apk, sign" description="Build and sign the apk without running tests."/>
 
 </project>
