@@ -23,33 +23,9 @@ public class MenuWebserviceAdapter implements MenuDatasource {
 
     private static final String CANTEEN = "re_de_or";
     private static final String SERVER = "http://recanteen.appspot.com";
-    //private static final String SERVER = "http://192.168.178.32:8080";
 
     @Override
-    public void createManyItems() {
-        notImplemented();
-    }
-
-    @Override
-    public long createNote(String title, String body) {
-        notImplemented();
-        return 0;
-    }
-
-   @Override
-    public boolean deleteNote(long rowId) {
-        notImplemented();
-        return false;
-    }
-
-    @Override
-    public Cursor fetchAllMenus() {
-        notImplemented();
-        return null;
-    }
-
-    @Override
-    public List<Menu> fetchMenusFor(Date date) {
+    public List<MenuData> fetchMenusFor(Date date) {
         String content = null;
         HttpClient httpClient = new DefaultHttpClient();
         HttpContext localContext = new BasicHttpContext();
@@ -80,22 +56,6 @@ public class MenuWebserviceAdapter implements MenuDatasource {
             e.printStackTrace();
         }
         return result.toString();
-    }
-
-    @Override
-    public Cursor fetchNote(long rowId) throws SQLException {
-        notImplemented();
-        return null;
-    }
-
-    @Override
-    public boolean updateNote(long rowId, String title, String body) {
-        notImplemented();
-        return false;
-    }
-
-    private void notImplemented() {
-        throw new RuntimeException("Not implemented yet");
     }
 
  }

@@ -2,13 +2,13 @@ package de.repower.android.menu;
 
 import java.util.Date;
 
-public class Menu {
+public class MenuData {
     private final String _category;
     private final String _description;
     private final double _price;
     private final Date _date;
 
-    public Menu(String category, String description, double price, Date date) {
+    public MenuData(String category, String description, double price, Date date) {
         _category = category;
         _description = description;
         _price = price;
@@ -58,7 +58,7 @@ public class Menu {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Menu other = (Menu) obj;
+        MenuData other = (MenuData) obj;
         if (_category == null) {
             if (other._category != null)
                 return false;

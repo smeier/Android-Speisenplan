@@ -8,7 +8,6 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		<activity android:name=".MenuEdit" />
 		<uses-library android:name="android.test.runner" />
 	</application>
 	<instrumentation android:name="android.test.InstrumentationTestRunner"

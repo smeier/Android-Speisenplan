@@ -11,7 +11,7 @@ import org.json.JSONTokener;
 
 public class MenuParser {
 
-    public static Menu parse(String data) throws JSONException {
+    public static MenuData parse(String data) throws JSONException {
         JSONTokener parser = new JSONTokener(data);
         JSONObject object = (JSONObject) parser.nextValue();
         JSONObject menuObject = object.getJSONObject("menu");
@@ -19,11 +19,11 @@ public class MenuParser {
         String category = menuObject.getString("category");
         double price = menuObject.getDouble("price");
         String description = menuObject.getString("description");
-        return new Menu(category, description, price, date);
+        return new MenuData(category, description, price, date);
     }
 
-    public static List<Menu> parseMenuArray(String data) throws JSONException {
-        List<Menu> result = new ArrayList<Menu>();
+    public static List<MenuData> parseMenuArray(String data) throws JSONException {
+        List<MenuData> result = new ArrayList<MenuData>();
         JSONTokener parser = new JSONTokener(data);
         JSONObject object = (JSONObject) parser.nextValue();
         JSONArray menus = object.getJSONArray("menus");
@@ -33,7 +33,7 @@ public class MenuParser {
             String category = menuObject.getString("category");
             double price = menuObject.getDouble("price");
             String description = menuObject.getString("description");
-            result.add(new Menu(category, description, price, date));
+            result.add(new MenuData(category, description, price, date));
         }
         return result;
     }

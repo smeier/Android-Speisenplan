@@ -29,7 +29,6 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.widget.TextView;
 
 /**
  * Simple notes database access helper class. Defines the basic CRUD operations
@@ -67,7 +66,6 @@ public class MenuDbAdapter implements MenuDatasource {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-
             db.execSQL(DATABASE_CREATE);
             createManyItems(db);
         }
@@ -174,31 +172,6 @@ public class MenuDbAdapter implements MenuDatasource {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * com.android.demo.notepad3.StatuscodeDatasource#createNote(java.lang.String
-     * , java.lang.String)
-     */
-    public long createNote(String title, String body) {
-        ContentValues initialValues = new ContentValues();
-        initialValues.put(MenuDatasource.KEY_DATE, title);
-        initialValues.put(MenuDatasource.KEY_BODY, body);
-
-        return _db.insert(DATABASE_TABLE, null, initialValues);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.android.demo.notepad3.StatuscodeDatasource#deleteNote(long)
-     */
-    public boolean deleteNote(long rowId) {
-
-        return _db.delete(DATABASE_TABLE, MenuDatasource.KEY_ROWID + "=" + rowId, null) > 0;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see com.android.demo.notepad3.StatuscodeDatasource#fetchAllNotes()
      */
     public Cursor fetchAllMenus() {
@@ -206,25 +179,6 @@ public class MenuDbAdapter implements MenuDatasource {
         return _db.query(DATABASE_TABLE, new String[] { MenuDatasource.KEY_ROWID, MenuDatasource.KEY_DATE,
                 MenuDatasource.KEY_BODY, MenuDatasource.KEY_CATEGORY, MenuDatasource.KEY_PRICE }, null, null, null,
                 null, null);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.android.demo.notepad3.StatuscodeDatasource#fetchNote(long)
-     */
-    public Cursor fetchNote(long rowId) throws SQLException {
-
-        Cursor mCursor =
-
-        _db.query(true, DATABASE_TABLE, new String[] { MenuDatasource.KEY_ROWID, MenuDatasource.KEY_DATE,
-                MenuDatasource.KEY_BODY, MenuDatasource.KEY_CATEGORY, MenuDatasource.KEY_PRICE },
-                MenuDatasource.KEY_ROWID + "=" + rowId, null, null, null, null, null);
-        if (mCursor != null) {
-            mCursor.moveToFirst();
-        }
-        return mCursor;
-
     }
 
     /*
@@ -241,7 +195,7 @@ public class MenuDbAdapter implements MenuDatasource {
         return _db.update(DATABASE_TABLE, args, MenuDatasource.KEY_ROWID + "=" + rowId, null) > 0;
     }
 
-    public Cursor cursorFor(Date date) {
+    private Cursor cursorFor(Date date) {
         String dateStr = DateUtil.formatDateForDB(date);
         Cursor mCursor = _db.query(true, DATABASE_TABLE,
                 new String[] { MenuDatasource.KEY_ROWID, MenuDatasource.KEY_DATE, MenuDatasource.KEY_BODY,
@@ -253,23 +207,22 @@ public class MenuDbAdapter implements MenuDatasource {
         return mCursor;
     }
 
-    public List<Menu> fetchMenusFor(Date date) {
+    public List<MenuData> fetchMenusFor(Date date) {
         Cursor cursor = cursorFor(date);
-        List<Menu> result = new ArrayList<Menu>();
+        List<MenuData> result = new ArrayList<MenuData>();
         if (!cursor.isClosed() && !cursor.isAfterLast()) {
             do {
-            String dateStr = cursor.getString(cursor.getColumnIndexOrThrow(MenuDatasource.KEY_DATE));
-            String category = cursor.getString(cursor.getColumnIndexOrThrow(MenuDatasource.KEY_CATEGORY));
-            Double price = cursor.getDouble(cursor.getColumnIndexOrThrow(MenuDatasource.KEY_PRICE));
-            String description = cursor.getString(cursor.getColumnIndexOrThrow(MenuDatasource.KEY_BODY));
-            Menu menu = new Menu(category, description, price, DateUtil.parseDBDate(dateStr));
-            result.add(menu);
+                String dateStr = cursor.getString(cursor.getColumnIndexOrThrow(MenuDatasource.KEY_DATE));
+                String category = cursor.getString(cursor.getColumnIndexOrThrow(MenuDatasource.KEY_CATEGORY));
+                Double price = cursor.getDouble(cursor.getColumnIndexOrThrow(MenuDatasource.KEY_PRICE));
+                String description = cursor.getString(cursor.getColumnIndexOrThrow(MenuDatasource.KEY_BODY));
+                MenuData menu = new MenuData(category, description, price, DateUtil.parseDBDate(dateStr));
+                result.add(menu);
             } while (cursor.moveToNext());
         }
         return result;
     }
 
-    @Override
     public void createManyItems() {
         _dbHelper.createManyItems(_db);
     }
