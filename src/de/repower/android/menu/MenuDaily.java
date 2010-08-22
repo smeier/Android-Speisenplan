@@ -13,35 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package de.repower.android.menu;
 
 import java.util.Date;
 import java.util.List;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewManager;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 public class MenuDaily extends Activity implements OnClickListener {
     private MenuDatasource mDbHelper;
-    private TextView date;
-    private TextView[] category = new TextView[3];
-    private TextView[] price = new TextView[3];
-    private TextView[] body = new TextView[3];
     private Date _date;
-
     private GestureDetector _gestureScanner;
     private View.OnTouchListener _touchListener;
+    private InfiniteFlipView _flipper;
+    private Components _components0 = new Components();
+    private Components _components1 = new Components();
 
     /** Called when the activity is first created. */
     @Override
@@ -49,13 +43,7 @@ public class MenuDaily extends Activity implements OnClickListener {
         super.onCreate(savedInstanceState);
         _date = new Date();
         mDbHelper = new MenuWebserviceAdapter();
-        // SlideView view = new SlideView(this);
-        // view.setLayoutParams(new
-        // ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
-        // ViewGroup.LayoutParams.FILL_PARENT));
-        // setContentView(view);
         setContentView(R.layout.menu_daily);
-
         _gestureScanner = new GestureDetector(new MyGestureDetector());
         _touchListener = new View.OnTouchListener() {
             @Override
@@ -66,44 +54,59 @@ public class MenuDaily extends Activity implements OnClickListener {
                 return false;
             }
         };
-        View view = findViewById(R.id.menu_daily); // getViewInflate(R.layout.menu_daily);
-        view.setOnTouchListener(_touchListener);
-        view.setOnClickListener(this);
+        View view1 = findViewById(R.id.first);
+        view1.setOnTouchListener(_touchListener);
+        view1.setOnClickListener(this);
+        View view2 = findViewById(R.id.second);
+        view2.setOnTouchListener(_touchListener);
+        view2.setOnClickListener(this);
+        _flipper = (InfiniteFlipView) findViewById(R.id.flipper);
+        _flipper.setContentObjects(_components0, _components1);
+        initComponents();
+    }
+
+    private void initComponents() {
+        _components0.date = (TextView) findViewById(R.id.date_0);
+        _components0.body[0] = (TextView) findViewById(R.id.body_00);
+        _components0.category[0] = (TextView) findViewById(R.id.category_00);
+        _components0.price[0] = (TextView) findViewById(R.id.price_00);
+        _components0.body[1] = (TextView) findViewById(R.id.body_01);
+        _components0.category[1] = (TextView) findViewById(R.id.category_01);
+        _components0.price[1] = (TextView) findViewById(R.id.price_01);
+        _components0.body[2] = (TextView) findViewById(R.id.body_02);
+        _components0.category[2] = (TextView) findViewById(R.id.category_02);
+        _components0.price[2] = (TextView) findViewById(R.id.price_02);
+        
+        _components1.date = (TextView) findViewById(R.id.date_1);
+        _components1.body[0] = (TextView) findViewById(R.id.body_10);
+        _components1.category[0] = (TextView) findViewById(R.id.category_10);
+        _components1.price[0] = (TextView) findViewById(R.id.price_10);
+        _components1.body[1] = (TextView) findViewById(R.id.body_11);
+        _components1.category[1] = (TextView) findViewById(R.id.category_11);
+        _components1.price[1] = (TextView) findViewById(R.id.price_11);
+        _components1.body[2] = (TextView) findViewById(R.id.body_12);
+        _components1.category[2] = (TextView) findViewById(R.id.category_12);
+        _components1.price[2] = (TextView) findViewById(R.id.price_12);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        fillData();
+        fillData(_components0);
     }
 
-    private void fillData() {
+    private void fillData(Components c) {
         List<de.repower.android.menu.MenuData> menus = mDbHelper.fetchMenusFor(_date);
-
-        date = (TextView) findViewById(R.id.date);
-        if (date != null) {
-            body[0] = (TextView) findViewById(R.id.body_0);
-            category[0] = (TextView) findViewById(R.id.category_0);
-            price[0] = (TextView) findViewById(R.id.price_0);
-            body[1] = (TextView) findViewById(R.id.body_1);
-            category[1] = (TextView) findViewById(R.id.category_1);
-            price[1] = (TextView) findViewById(R.id.price_1);
-            body[2] = (TextView) findViewById(R.id.body_2);
-            category[2] = (TextView) findViewById(R.id.category_2);
-            price[2] = (TextView) findViewById(R.id.price_2);
-
-            if (menus != null && !menus.isEmpty()) {
-                int index = 0;
-                for (MenuData menu : menus) {
-                    date.setText(DateUtil.beautifyDate(menu.getDate()));
-                    body[index].setText(menu.getDescription());
-                    category[index].setText(menu.getCategory());
-                    price[index].setText(StringUtil.formatPrice(menu.getPrice()));
-                    index++;
-                }
+        if (menus != null && !menus.isEmpty()) {
+            int index = 0;
+            for (MenuData menu : menus) {
+                c.date.setText(DateUtil.beautifyDate(menu.getDate()));
+                c.body[index].setText(menu.getDescription());
+                c.category[index].setText(menu.getCategory());
+                c.price[index].setText(StringUtil.formatPrice(menu.getPrice()));
+                index++;
             }
         }
-
     }
 
     private void switchDate(boolean forward) {
@@ -112,13 +115,18 @@ public class MenuDaily extends Activity implements OnClickListener {
         } else {
             _date = DateUtil.previousDate(_date);
         }
-        fillData();
+        fillData((Components) _flipper.getCurrentContentObjects());
+        if (forward) {
+            _flipper.showNext();
+        } else {
+            _flipper.showPrevious();
+        }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-        fillData();
+        fillData(_components0);
     }
 
     @Override
@@ -138,13 +146,12 @@ public class MenuDaily extends Activity implements OnClickListener {
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             if (Math.abs(e1.getY() - e2.getY()) < SWIPE_MAX_OFF_PATH) {
                 if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                    switchDate(BACKWARD);
-                } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
                     switchDate(FORWARD);
+                } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                    switchDate(BACKWARD);
                 }
             }
             return false;
         }
     }
-
 }
