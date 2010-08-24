@@ -29,7 +29,7 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 public class MenuDaily extends Activity implements OnClickListener {
-    private MenuDatasource mDbHelper;
+    private MenuDatasource _dataSource;
     private Date _date;
     private GestureDetector _gestureScanner;
     private View.OnTouchListener _touchListener;
@@ -42,7 +42,7 @@ public class MenuDaily extends Activity implements OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         _date = new Date();
-        mDbHelper = new MenuWebserviceAdapter();
+        _dataSource = new MenuWebserviceAdapter();
         setContentView(R.layout.menu_daily);
         _gestureScanner = new GestureDetector(new MyGestureDetector());
         _touchListener = new View.OnTouchListener() {
@@ -96,7 +96,7 @@ public class MenuDaily extends Activity implements OnClickListener {
     }
 
     private void fillData(Components c) {
-        List<de.repower.android.menu.MenuData> menus = mDbHelper.fetchMenusFor(_date);
+        List<de.repower.android.menu.MenuData> menus = _dataSource.fetchMenusFor(_date);
         if (menus != null && !menus.isEmpty()) {
             int index = 0;
             for (MenuData menu : menus) {
