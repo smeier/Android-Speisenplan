@@ -44,7 +44,7 @@ public class MenuDaily extends Activity implements OnClickListener {
         _date = new Date();
         _dataSource = new MenuWebserviceAdapter();
         setContentView(R.layout.menu_daily);
-        _gestureScanner = new GestureDetector(new MyGestureDetector());
+        _gestureScanner = new GestureDetector(new GestureListener());
         _touchListener = new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -134,7 +134,7 @@ public class MenuDaily extends Activity implements OnClickListener {
         // nothing yet
     }
 
-    class MyGestureDetector extends SimpleOnGestureListener {
+    class GestureListener extends SimpleOnGestureListener {
         private static final boolean FORWARD = true;
         private static final boolean BACKWARD = false;
         private static final float VELO_X_Y_THRESHOLD = 5;
