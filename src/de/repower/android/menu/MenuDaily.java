@@ -33,7 +33,7 @@ public class MenuDaily extends Activity implements OnClickListener {
     private Date _date;
     private GestureDetector _gestureScanner;
     private View.OnTouchListener _touchListener;
-    private InfiniteFlipView _flipper;
+    private SlideView _slider;
     private Components _components0 = new Components();
     private Components _components1 = new Components();
 
@@ -60,8 +60,8 @@ public class MenuDaily extends Activity implements OnClickListener {
         View view2 = findViewById(R.id.second);
         view2.setOnTouchListener(_touchListener);
         view2.setOnClickListener(this);
-        _flipper = (InfiniteFlipView) findViewById(R.id.flipper);
-        _flipper.setContentObjects(_components0, _components1);
+        _slider = (SlideView) findViewById(R.id.flipper);
+        _slider.setContentObjects(_components0, _components1);
         initComponents();
     }
 
@@ -115,11 +115,11 @@ public class MenuDaily extends Activity implements OnClickListener {
         } else {
             _date = DateUtil.previousDate(_date);
         }
-        fillData((Components) _flipper.getCurrentContentObjects());
+        fillData((Components) _slider.getCurrentContentObjects());
         if (forward) {
-            _flipper.showNext();
+            _slider.showNext();
         } else {
-            _flipper.showPrevious();
+            _slider.showPrevious();
         }
     }
 
