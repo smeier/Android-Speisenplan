@@ -7,70 +7,29 @@
 	<TextView android:id="@+id/date_1"
 		xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"
-		android:layout_marginRight="10.0sp" 
-		android:layout_marginBottom="20.0sp"
-		android:textSize="16.0sp"
-		android:textStyle="bold" />
+		android:layout_marginRight="10.0sp" android:layout_marginBottom="20.0sp"
+		android:textSize="16.0sp" android:textStyle="bold" />
 
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	<de.repower.android.menu.MenuView android:id="@+id/tages_1"
+		xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"
-		android:orientation="vertical" android:layout_weight="1">
-		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			android:layout_width="wrap_content" android:layout_height="wrap_content">
-			<TextView android:id="@+id/category_10"
-				xmlns:android="http://schemas.android.com/apk/res/android"
-				android:layout_width="wrap_content" android:layout_height="wrap_content"
-				android:layout_marginRight="10.0sp" />
-			<TextView android:id="@+id/price_10"
-				xmlns:android="http://schemas.android.com/apk/res/android"
-				android:layout_width="wrap_content" android:layout_height="wrap_content" />
-		</LinearLayout>
-		<EditText android:id="@+id/body_10"
-			xmlns:android="http://schemas.android.com/apk/res/android"
-			android:editable="false"
-			android:cursorVisible="false"
-			android:layout_width="wrap_content" android:layout_height="wrap_content" />
-	</LinearLayout>
+		android:orientation="vertical" android:layout_weight="1"
+		category="Tagesgericht">
+	</de.repower.android.menu.MenuView>
 
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	<de.repower.android.menu.MenuView android:id="@+id/vege_1"
+		xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"
-		android:orientation="vertical" android:layout_weight="1">
-		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			android:layout_width="wrap_content" android:layout_height="wrap_content">
-			<TextView android:id="@+id/category_11"
-				xmlns:android="http://schemas.android.com/apk/res/android"
-				android:layout_width="wrap_content" android:layout_height="wrap_content"
-				android:layout_marginRight="10.0sp" />
-			<TextView android:id="@+id/price_11"
-				xmlns:android="http://schemas.android.com/apk/res/android"
-				android:layout_width="wrap_content" android:layout_height="wrap_content" />
-		</LinearLayout>
-		<EditText android:id="@+id/body_11"
-			xmlns:android="http://schemas.android.com/apk/res/android"
-			android:editable="false"
-			android:cursorVisible="false"
-			android:layout_width="wrap_content" android:layout_height="wrap_content" />
-	</LinearLayout>
+		android:orientation="vertical" android:layout_weight="1"
+		category="Vegetarisch">
+	</de.repower.android.menu.MenuView>
 
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	<de.repower.android.menu.MenuView android:id="@+id/wok_1"
+		xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"
-		android:orientation="vertical" android:layout_weight="1">
-		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			android:layout_width="wrap_content" android:layout_height="wrap_content">
-			<TextView android:id="@+id/category_12"
-				xmlns:android="http://schemas.android.com/apk/res/android"
-				android:layout_width="wrap_content" android:layout_height="wrap_content"
-				android:layout_marginRight="10.0sp" />
-			<TextView android:id="@+id/price_12"
-				xmlns:android="http://schemas.android.com/apk/res/android"
-				android:layout_width="wrap_content" android:layout_height="wrap_content" />
-		</LinearLayout>
-		<EditText android:id="@+id/body_12"
-			xmlns:android="http://schemas.android.com/apk/res/android"
-			android:editable="false"
-			android:cursorVisible="false"
-			android:layout_width="wrap_content" android:layout_height="wrap_content" />
-	</LinearLayout>
+		android:orientation="vertical" android:layout_weight="1"
+		category="Wok, Grill &amp; mehr">
+	</de.repower.android.menu.MenuView>
 
 </LinearLayout>
     

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" 
+	android:layout_height="fill_parent"
+	android:orientation="vertical"
+	android:id="@+id/menu_daily">
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:orientation="vertical" android:layout_weight="1">
+		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			android:layout_width="wrap_content" android:layout_height="wrap_content">
+			<TextView android:id="@+id/category_0"
+				android:tag="category"
+				xmlns:android="http://schemas.android.com/apk/res/android"
+				android:layout_width="wrap_content" 
+				android:layout_height="wrap_content"
+				android:layout_marginRight="10.0sp"
+				android:text="DEFAULT-TEXT" />
+			<TextView android:id="@+id/price_0"
+				android:tag="price"
+				xmlns:android="http://schemas.android.com/apk/res/android"
+				android:layout_width="wrap_content" 
+				android:layout_height="wrap_content" />
+		</LinearLayout>
+		<EditText android:id="@+id/body_0"
+			android:tag="body"
+			xmlns:android="http://schemas.android.com/apk/res/android"
+			android:editable="false"
+			android:cursorVisible="false"
+			android:layout_width="wrap_content" 
+			android:layout_height="wrap_content" />
+	</LinearLayout>
+</LinearLayout>
+    
