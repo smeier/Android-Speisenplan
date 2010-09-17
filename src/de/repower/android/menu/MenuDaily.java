@@ -4,11 +4,11 @@ import java.util.Date;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.GestureDetector;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,20 +17,24 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 public class MenuDaily extends Activity implements OnClickListener {
+    private static final long SWITCH_TO_TODAY_OFFSET = 1000 * 3600 * 6;
     private MenuDatasource _dataSource;
     private Date _date;
+    private long _lastAccess;
     private GestureDetector _gestureScanner;
     private View.OnTouchListener _touchListener;
     private SlideView _slider;
     private Components _components0 = new Components();
     private Components _components1 = new Components();
     private MenuView[] _menuViews = new MenuView[6];
+    private ProgressDialog _progressDialog;
 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        _date = new Date();
+        setLastAccess();
+        setCurrentDate();
         _dataSource = new MenuWebserviceAdapter();
         setContentView(R.layout.menu_daily);
         _gestureScanner = new GestureDetector(new GestureListener());
@@ -54,6 +58,14 @@ public class MenuDaily extends Activity implements OnClickListener {
         initComponents();
     }
 
+    private void setCurrentDate() {
+        _date = new Date();
+    }
+
+    private void setLastAccess() {
+        _lastAccess = System.currentTimeMillis();
+    }
+
     private void initComponents() {
         _components0.date = (TextView) findViewById(R.id.date_0);
         _components1.date = (TextView) findViewById(R.id.date_1);
@@ -63,20 +75,35 @@ public class MenuDaily extends Activity implements OnClickListener {
         _menuViews[3] = (MenuView) findViewById(R.id.tages_1);
         _menuViews[4] = (MenuView) findViewById(R.id.vege_1);
         _menuViews[5] = (MenuView) findViewById(R.id.wok_1);
-        
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        setLastAccess();
         fillData(_components0);
     }
 
     private void fillData(Components c) {
+        if (System.currentTimeMillis() - _lastAccess > SWITCH_TO_TODAY_OFFSET) {
+            setCurrentDate();
+        }
+        DataReaderTask task = new DataReaderTask();
+        task.execute(c);
+        _progressDialog = ProgressDialog.show(this, " " , " Loading. Please wait ... ", true);
+        _progressDialog.show();
+    }
+
+    private List<de.repower.android.menu.MenuData> downloadData() {
         List<de.repower.android.menu.MenuData> menus = _dataSource.fetchMenusFor(_date);
-       if (menus != null && !menus.isEmpty()) {
-           c.date.setText(DateUtil.beautifyDate(menus.get(0).getDate()));
-                       int index = 0;
+        return menus;
+    }
+
+    private void showData(Components c, List<de.repower.android.menu.MenuData> menus) {
+        _progressDialog.dismiss();
+        if (menus != null && !menus.isEmpty()) {
+            c.date.setText(DateUtil.beautifyDate(menus.get(0).getDate()));
+            int index = 0;
             if (c == _components1) {
                 index = 3;
             }
@@ -85,14 +112,6 @@ public class MenuDaily extends Activity implements OnClickListener {
                         .getPrice()));
                 index++;
             }
-        }
-    }
-
-    private void setIfNotNull(TextView[] v, int index, String menu) {
-        if (v[index] != null) {
-            v[index].setText(menu);
-        } else {
-            Log.i("menu", "null");
         }
     }
 
@@ -139,6 +158,22 @@ public class MenuDaily extends Activity implements OnClickListener {
                 }
             }
             return false;
+        }
+    }
+
+    class DataReaderTask extends AsyncTask<Components, Void, List<MenuData>> {
+        Components _components;
+        @Override
+        protected List<de.repower.android.menu.MenuData> doInBackground(Components... comps) {
+            _components = comps[0];
+            return downloadData();
+        }
+
+        @Override
+        protected void onPostExecute(List<MenuData> menus) {
+            if (!isCancelled()) {
+                showData(_components, menus);
+            }
         }
     }
 }
