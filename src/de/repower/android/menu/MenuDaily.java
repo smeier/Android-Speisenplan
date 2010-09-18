@@ -1,7 +1,9 @@
 package de.repower.android.menu;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -28,6 +30,7 @@ public class MenuDaily extends Activity implements OnClickListener {
     private Components _components1 = new Components();
     private MenuView[] _menuViews = new MenuView[6];
     private ProgressDialog _progressDialog;
+    private Map<Date, List<MenuData>> _menuCache = new HashMap<Date, List<MenuData>>();
 
     /** Called when the activity is first created. */
     @Override
@@ -59,7 +62,7 @@ public class MenuDaily extends Activity implements OnClickListener {
     }
 
     private void setCurrentDate() {
-        _date = new Date();
+        _date = DateUtil.today();
     }
 
     private void setLastAccess() {
@@ -88,10 +91,15 @@ public class MenuDaily extends Activity implements OnClickListener {
         if (System.currentTimeMillis() - _lastAccess > SWITCH_TO_TODAY_OFFSET) {
             setCurrentDate();
         }
+        if (isInCache(_date)) {
+            showData(c, retrieveFromCache(_date));
+        }
         DataReaderTask task = new DataReaderTask();
         task.execute(c);
-        _progressDialog = ProgressDialog.show(this, " " , " Loading. Please wait ... ", true);
-        _progressDialog.show();
+        if (!isInCache(_date)) {
+            _progressDialog = ProgressDialog.show(this, " " , " Loading. Please wait ... ", true);
+            _progressDialog.show();
+        }
     }
 
     private List<de.repower.android.menu.MenuData> downloadData() {
@@ -161,6 +169,18 @@ public class MenuDaily extends Activity implements OnClickListener {
         }
     }
 
+    private void storeInCache(List<MenuData> menus) {
+        _menuCache.put(menus.get(0).getDate(), menus);
+    }
+
+    private List<MenuData> retrieveFromCache(Date date) {
+        return _menuCache.get(date);
+    }
+
+    private boolean isInCache(Date date) {
+        return _menuCache.containsKey(date);
+    }
+
     class DataReaderTask extends AsyncTask<Components, Void, List<MenuData>> {
         Components _components;
         @Override
@@ -172,8 +192,10 @@ public class MenuDaily extends Activity implements OnClickListener {
         @Override
         protected void onPostExecute(List<MenuData> menus) {
             if (!isCancelled()) {
+                storeInCache(menus);
                 showData(_components, menus);
             }
         }
     }
+
 }

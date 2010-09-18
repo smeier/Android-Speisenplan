@@ -37,4 +37,12 @@ public class DateUtil {
         return new Date(date.getTime() - ONE_DAY);
     }
 
+    public static Date today() {
+        return normalizeDate(new Date());
+    }
+
+    private static Date normalizeDate(Date date) {
+        return parseDBDate(formatDateForDB(date));
+    }
+
 }
