@@ -1,13 +1,18 @@
 package de.repower.android.menu;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class MenuData {
-    private final String _category;
-    private final String _description;
-    private final double _price;
-    private final Date _date;
+public class MenuData  implements Serializable {
+    private String _category;
+    private String _description;
+    private double _price;
+    private Date _date;
 
+    protected MenuData(){
+        // Serializable requires this constructor
+    }
+    
     public MenuData(String category, String description, double price, Date date) {
         _category = category;
         _description = description;

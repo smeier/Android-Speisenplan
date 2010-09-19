@@ -19,6 +19,7 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 public class MenuDaily extends Activity implements OnClickListener {
+    private static final String CACHE_KEY = "MENUS";
     private static final long SWITCH_TO_TODAY_OFFSET = 1000 * 3600 * 6;
     private MenuDatasource _dataSource;
     private Date _date;
@@ -30,12 +31,15 @@ public class MenuDaily extends Activity implements OnClickListener {
     private Components _components1 = new Components();
     private MenuView[] _menuViews = new MenuView[6];
     private ProgressDialog _progressDialog;
-    private Map<Date, List<MenuData>> _menuCache = new HashMap<Date, List<MenuData>>();
+    private MenuCache _menuCache = new MenuCache();
 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState != null && savedInstanceState.containsKey(CACHE_KEY)) {
+            _menuCache = MenuCache.deSerialize(savedInstanceState.getByteArray(CACHE_KEY));
+        }
         setLastAccess();
         setCurrentDate();
         _dataSource = new MenuWebserviceAdapter();
@@ -59,6 +63,15 @@ public class MenuDaily extends Activity implements OnClickListener {
         _slider = (SlideView) findViewById(R.id.flipper);
         _slider.setContentObjects(_components0, _components1);
         initComponents();
+    }
+    
+    @Override
+    public void onSaveInstanceState(Bundle state) {
+        state.putByteArray(CACHE_KEY, serialize(_menuCache));
+    }
+
+    private byte[] serialize(MenuCache menuCache) {
+        return menuCache.serialize();
     }
 
     private void setCurrentDate() {
