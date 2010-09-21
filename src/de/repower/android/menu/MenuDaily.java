@@ -1,13 +1,12 @@
 package de.repower.android.menu;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.GestureDetector;
@@ -20,7 +19,9 @@ import android.widget.TextView;
 
 public class MenuDaily extends Activity implements OnClickListener {
     private static final String CACHE_KEY = "MENUS";
-    private static final long SWITCH_TO_TODAY_OFFSET = 1000 * 3600 * 6;
+    private static final long SWITCH_TO_TODAY_OFFSET = DateUtil.ONE_HOUR * 6;
+    private static final String DATE = "DATE";
+    private static final long MAX_AGE_IN_CACHE = 7 * DateUtil.ONE_DAY;
     private MenuDatasource _dataSource;
     private Date _date;
     private long _lastAccess;
@@ -37,11 +38,12 @@ public class MenuDaily extends Activity implements OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState != null && savedInstanceState.containsKey(CACHE_KEY)) {
-            _menuCache = MenuCache.deSerialize(savedInstanceState.getByteArray(CACHE_KEY));
+        if (savedInstanceState != null && savedInstanceState.containsKey(DATE)) {
+            _date = DateUtil.parseDBDate(savedInstanceState.getString(DATE));
+        } else {
+            setCurrentDate();
         }
         setLastAccess();
-        setCurrentDate();
         _dataSource = new MenuWebserviceAdapter();
         setContentView(R.layout.menu_daily);
         _gestureScanner = new GestureDetector(new GestureListener());
@@ -64,14 +66,33 @@ public class MenuDaily extends Activity implements OnClickListener {
         _slider.setContentObjects(_components0, _components1);
         initComponents();
     }
-    
+
     @Override
     public void onSaveInstanceState(Bundle state) {
-        state.putByteArray(CACHE_KEY, serialize(_menuCache));
+        state.putString(DATE, DateUtil.formatDateForDB(_date));
+        super.onSaveInstanceState(state);
     }
 
-    private byte[] serialize(MenuCache menuCache) {
-        return menuCache.serialize();
+    @Override
+    public void onStop() {
+        super.onStop();
+        saveCache();
+    }
+
+    private void saveCache() {
+        _menuCache.removeOldEntriesFromCache(MenuDaily.MAX_AGE_IN_CACHE);
+        SharedPreferences.Editor pref = getSharedPreferences(CACHE_KEY, MODE_PRIVATE).edit();
+        if (pref != null) {
+            pref.putString(CACHE_KEY, _menuCache.serialize());
+            pref.commit();
+        }
+    }
+
+    private void readCache() {
+        SharedPreferences pref = getSharedPreferences(CACHE_KEY, MODE_PRIVATE);
+        if (pref != null && pref.contains(CACHE_KEY)) {
+            _menuCache = MenuCache.deSerialize(pref.getString(CACHE_KEY, null));
+        }
     }
 
     private void setCurrentDate() {
@@ -96,6 +117,7 @@ public class MenuDaily extends Activity implements OnClickListener {
     @Override
     public void onStart() {
         super.onStart();
+        readCache();
         setLastAccess();
         fillData(_components0);
     }
@@ -110,18 +132,17 @@ public class MenuDaily extends Activity implements OnClickListener {
         DataReaderTask task = new DataReaderTask();
         task.execute(c);
         if (!isInCache(_date)) {
-            _progressDialog = ProgressDialog.show(this, " " , " Loading. Please wait ... ", true);
-            _progressDialog.show();
+            startProgressIndicator();
         }
     }
 
-    private List<de.repower.android.menu.MenuData> downloadData() {
-        List<de.repower.android.menu.MenuData> menus = _dataSource.fetchMenusFor(_date);
-        return menus;
+    private void startProgressIndicator() {
+        _progressDialog = ProgressDialog.show(this, " ", " Loading. Please wait ... ", true);
+        _progressDialog.show();
     }
 
     private void showData(Components c, List<de.repower.android.menu.MenuData> menus) {
-        _progressDialog.dismiss();
+        stopProgressIndicator();
         if (menus != null && !menus.isEmpty()) {
             c.date.setText(DateUtil.beautifyDate(menus.get(0).getDate()));
             int index = 0;
@@ -133,6 +154,17 @@ public class MenuDaily extends Activity implements OnClickListener {
                         .getPrice()));
                 index++;
             }
+        }
+    }
+
+    private List<de.repower.android.menu.MenuData> downloadData() {
+        List<de.repower.android.menu.MenuData> menus = _dataSource.fetchMenusFor(_date);
+        return menus;
+    }
+
+    private void stopProgressIndicator() {
+        if (_progressDialog != null) {
+            _progressDialog.dismiss();
         }
     }
 
@@ -164,7 +196,6 @@ public class MenuDaily extends Activity implements OnClickListener {
     class GestureListener extends SimpleOnGestureListener {
         private static final boolean FORWARD = true;
         private static final boolean BACKWARD = false;
-        private static final float VELO_X_Y_THRESHOLD = 5;
         private static final int SWIPE_MIN_DISTANCE = 120;
         private static final int SWIPE_MAX_OFF_PATH = 250;
         private static final int SWIPE_THRESHOLD_VELOCITY = 200;
@@ -196,6 +227,7 @@ public class MenuDaily extends Activity implements OnClickListener {
 
     class DataReaderTask extends AsyncTask<Components, Void, List<MenuData>> {
         Components _components;
+
         @Override
         protected List<de.repower.android.menu.MenuData> doInBackground(Components... comps) {
             _components = comps[0];
@@ -210,5 +242,4 @@ public class MenuDaily extends Activity implements OnClickListener {
             }
         }
     }
-
 }

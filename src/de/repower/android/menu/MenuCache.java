@@ -27,7 +27,7 @@ public class MenuCache implements Serializable {
         return _map.containsKey(date);
     }
 
-    public byte[] serialize() {
+    public String serialize() {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
             ObjectOutputStream objectStream = new ObjectOutputStream(out);
@@ -35,10 +35,11 @@ public class MenuCache implements Serializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return out.toByteArray();
+        return Base64.encodeLines(out.toByteArray());
     }
 
-    public static MenuCache deSerialize(byte[] serialized) {
+    public static MenuCache deSerialize(String input) {
+        byte[] serialized = Base64.decodeLines(input);
         if (serialized != null) {
             try {
                 ObjectInputStream objectStream = new ObjectInputStream(new ByteArrayInputStream(serialized));
@@ -52,5 +53,14 @@ public class MenuCache implements Serializable {
             }
         }
         return new MenuCache();
+    }
+
+    void removeOldEntriesFromCache(long maxAgeInCache) {
+        for (Date date : _map.keySet()) {
+            if (DateUtil.olderThan(date, maxAgeInCache)) {
+                _map.remove(date);
+            }
+        }
+        
     }
 }

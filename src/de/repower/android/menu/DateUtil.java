@@ -8,7 +8,8 @@ import android.text.format.DateFormat;
 
 public class DateUtil {
 
-    private static final int ONE_DAY = 24 * 3600 * 1000;
+    static final int ONE_HOUR = 3600 * 1000;
+    static final int ONE_DAY = 24 * ONE_HOUR;
     private static final String DATE_PATTERN = "yyyy-MM-dd";
     private static final String BEAUTIFUL_DATE_PATTERN = "EEE dd.MM.yyyy";
 
@@ -43,6 +44,10 @@ public class DateUtil {
 
     private static Date normalizeDate(Date date) {
         return parseDBDate(formatDateForDB(date));
+    }
+
+    public static boolean olderThan(Date date, long maxAgeInCache) {
+        return System.currentTimeMillis() - date.getTime() > maxAgeInCache;
     }
 
 }

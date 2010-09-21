@@ -17,7 +17,7 @@ public class MenuCacheTest {
         menus.add(new MenuData("sdf", "sdlfj", 3.5, date));
         MenuCache cache = new MenuCache();
         cache.put(date, menus);
-        byte[] ser = cache.serialize();
+        String ser = cache.serialize();
         MenuCache deser = MenuCache.deSerialize(ser);
         assertNotNull(deser.get(date));
     }
