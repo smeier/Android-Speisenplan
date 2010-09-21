@@ -1,3 +1,15 @@
+// Copyright 2010 Stefan Meier
+//
+// This module is multi-licensed and may be used under the terms
+// of any of the following licenses:
+//
+//  EPL, Eclipse Public License, http://www.eclipse.org/legal
+//  LGPL, GNU Lesser General Public License, http://www.gnu.org/licenses/lgpl.html
+//  AL, Apache License, http://www.apache.org/licenses
+//  BSD, BSD License, http://www.opensource.org/licenses/bsd-license.php
+//
+// Please contact the author if you need another license.
+// This module is provided "as is", without warranties of any kind.
 package de.repower.android.menu;
 
 import android.content.Context;
@@ -21,139 +33,7 @@ public class MenuView extends LinearLayout {
     public MenuView(Context context) {
         // UNUSED?
         super(context);
-        init(new AttributeSet() {
-            @Override
-            public int getStyleAttribute() {
-                // TODO Auto-generated method stub
-                return 0;
-            }
-            
-            @Override
-            public String getPositionDescription() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-            
-            @Override
-            public int getIdAttributeResourceValue(int defaultValue) {
-                // TODO Auto-generated method stub
-                return 0;
-            }
-            
-            @Override
-            public String getIdAttribute() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-            
-            @Override
-            public String getClassAttribute() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-            
-            @Override
-            public String getAttributeValue(String namespace, String name) {
-                // TODO Auto-generated method stub
-                return null;
-            }
-            
-            @Override
-            public String getAttributeValue(int index) {
-                // TODO Auto-generated method stub
-                return null;
-            }
-            
-            @Override
-            public int getAttributeUnsignedIntValue(String namespace, String attribute, int defaultValue) {
-                // TODO Auto-generated method stub
-                return 0;
-            }
-            
-            @Override
-            public int getAttributeUnsignedIntValue(int index, int defaultValue) {
-                // TODO Auto-generated method stub
-                return 0;
-            }
-            
-            @Override
-            public int getAttributeResourceValue(String namespace, String attribute, int defaultValue) {
-                // TODO Auto-generated method stub
-                return 0;
-            }
-            
-            @Override
-            public int getAttributeResourceValue(int index, int defaultValue) {
-                // TODO Auto-generated method stub
-                return 0;
-            }
-            
-            @Override
-            public int getAttributeNameResource(int index) {
-                // TODO Auto-generated method stub
-                return 0;
-            }
-            
-            @Override
-            public String getAttributeName(int index) {
-                // TODO Auto-generated method stub
-                return null;
-            }
-            
-            @Override
-            public int getAttributeListValue(String namespace, String attribute, String[] options, int defaultValue) {
-                // TODO Auto-generated method stub
-                return 0;
-            }
-            
-            @Override
-            public int getAttributeListValue(int index, String[] options, int defaultValue) {
-                // TODO Auto-generated method stub
-                return 0;
-            }
-            
-            @Override
-            public int getAttributeIntValue(String namespace, String attribute, int defaultValue) {
-                // TODO Auto-generated method stub
-                return 0;
-            }
-            
-            @Override
-            public int getAttributeIntValue(int index, int defaultValue) {
-                // TODO Auto-generated method stub
-                return 0;
-            }
-            
-            @Override
-            public float getAttributeFloatValue(String namespace, String attribute, float defaultValue) {
-                // TODO Auto-generated method stub
-                return 0;
-            }
-            
-            @Override
-            public float getAttributeFloatValue(int index, float defaultValue) {
-                // TODO Auto-generated method stub
-                return 0;
-            }
-            
-            @Override
-            public int getAttributeCount() {
-                // TODO Auto-generated method stub
-                return 0;
-            }
-            
-            @Override
-            public boolean getAttributeBooleanValue(String namespace, String attribute, boolean defaultValue) {
-                // TODO Auto-generated method stub
-                return false;
-            }
-            
-            @Override
-            public boolean getAttributeBooleanValue(int index, boolean defaultValue) {
-                // TODO Auto-generated method stub
-                return false;
-            }
-        });
+        init(emptyAttributeSet());
         Log.i("menu", "constructor without attrs");
     }
 
@@ -165,7 +45,7 @@ public class MenuView extends LinearLayout {
         }
         // Don't forget this
         a.recycle();
-        LinearLayout view = (LinearLayout) LayoutInflater.from(this.getContext()).inflate(R.layout.menu_view, this);
+        LayoutInflater.from(this.getContext()).inflate(R.layout.menu_view, this);
         _body = (TextView) findViewWithTag("body");
         _category = (TextView) findViewWithTag("category");
         _price = (TextView) findViewWithTag("price");
@@ -175,5 +55,119 @@ public class MenuView extends LinearLayout {
         _body.setText(body);
         _category.setText(category);
         _price.setText(price);
+    }
+
+    private AttributeSet emptyAttributeSet() {
+        return new AttributeSet() {
+            @Override
+            public int getStyleAttribute() {
+                return 0;
+            }
+            
+            @Override
+            public String getPositionDescription() {
+                return null;
+            }
+            
+            @Override
+            public int getIdAttributeResourceValue(int defaultValue) {
+                return 0;
+            }
+            
+            @Override
+            public String getIdAttribute() {
+                return null;
+            }
+            
+            @Override
+            public String getClassAttribute() {
+                return null;
+            }
+            
+            @Override
+            public String getAttributeValue(String namespace, String name) {
+                return null;
+            }
+            
+            @Override
+            public String getAttributeValue(int index) {
+                return null;
+            }
+            
+            @Override
+            public int getAttributeUnsignedIntValue(String namespace, String attribute, int defaultValue) {
+                return 0;
+            }
+            
+            @Override
+            public int getAttributeUnsignedIntValue(int index, int defaultValue) {
+                return 0;
+            }
+            
+            @Override
+            public int getAttributeResourceValue(String namespace, String attribute, int defaultValue) {
+                return 0;
+            }
+            
+            @Override
+            public int getAttributeResourceValue(int index, int defaultValue) {
+                return 0;
+            }
+            
+            @Override
+            public int getAttributeNameResource(int index) {
+                return 0;
+            }
+            
+            @Override
+            public String getAttributeName(int index) {
+                return null;
+            }
+            
+            @Override
+            public int getAttributeListValue(String namespace, String attribute, String[] options, int defaultValue) {
+                return 0;
+            }
+            
+            @Override
+            public int getAttributeListValue(int index, String[] options, int defaultValue) {
+                return 0;
+            }
+            
+            @Override
+            public int getAttributeIntValue(String namespace, String attribute, int defaultValue) {
+                return 0;
+            }
+            
+            @Override
+            public int getAttributeIntValue(int index, int defaultValue) {
+                return 0;
+            }
+            
+            @Override
+            public float getAttributeFloatValue(String namespace, String attribute, float defaultValue) {
+                return 0;
+            }
+            
+            @Override
+            public float getAttributeFloatValue(int index, float defaultValue) {
+                return 0;
+            }
+            
+            @Override
+            public int getAttributeCount() {
+                return 0;
+            }
+            
+            @Override
+            public boolean getAttributeBooleanValue(String namespace, String attribute, boolean defaultValue) {
+                return false;
+            }
+            
+            @Override
+            public boolean getAttributeBooleanValue(int index, boolean defaultValue) {
+                return false;
+            }
+        };
     }
 }

@@ -1,19 +1,15 @@
-/*
- * Copyright (C) 2008 Google Inc.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
-
+// Copyright 2010 Stefan Meier
+//
+// This module is multi-licensed and may be used under the terms
+// of any of the following licenses:
+//
+//  EPL, Eclipse Public License, http://www.eclipse.org/legal
+//  LGPL, GNU Lesser General Public License, http://www.gnu.org/licenses/lgpl.html
+//  AL, Apache License, http://www.apache.org/licenses
+//  BSD, BSD License, http://www.opensource.org/licenses/bsd-license.php
+//
+// Please contact the author if you need another license.
+// This module is provided "as is", without warranties of any kind.
 package de.repower.android.menu;
 
 import java.util.ArrayList;
@@ -30,16 +26,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-/**
- * Simple notes database access helper class. Defines the basic CRUD operations
- * for the notepad example, and gives the ability to list all notes as well as
- * retrieve or modify a specific note.
- * 
- * This has been improved from the first version of this tutorial through the
- * addition of better error handling and also using returning a Cursor instead
- * of using a collection of inner classes (which is less scalable and not
- * recommended).
- */
 public class MenuDbAdapter implements MenuDatasource {
 
     private static final String TAG = "MenuDbAdapter";
@@ -169,11 +155,6 @@ public class MenuDbAdapter implements MenuDatasource {
         _dbHelper.close();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.android.demo.notepad3.StatuscodeDatasource#fetchAllNotes()
-     */
     public Cursor fetchAllMenus() {
 
         return _db.query(DATABASE_TABLE, new String[] { MenuDatasource.KEY_ROWID, MenuDatasource.KEY_DATE,
@@ -181,12 +162,6 @@ public class MenuDbAdapter implements MenuDatasource {
                 null, null);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.android.demo.notepad3.StatuscodeDatasource#updateNote(long,
-     * java.lang.String, java.lang.String)
-     */
     public boolean updateNote(long rowId, String title, String body) {
         ContentValues args = new ContentValues();
         args.put(MenuDatasource.KEY_DATE, title);
