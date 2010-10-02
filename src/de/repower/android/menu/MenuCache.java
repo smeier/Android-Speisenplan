@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.io.StreamCorruptedException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -68,9 +69,10 @@ public class MenuCache implements Serializable {
     }
 
     void removeOldEntriesFromCache(long maxAgeInCache) {
-        for (Date date : _map.keySet()) {
+        for (Iterator<Date> it = _map.keySet().iterator(); it.hasNext();) {
+            Date date = it.next();
             if (DateUtil.olderThan(date, maxAgeInCache)) {
-                _map.remove(date);
+                it.remove();
             }
         }
         
